@@ -17,6 +17,7 @@ subjects = int(input("Enter Number of Subjects : "))
 marks = int(input("How much marks the paper contain(eg. 100,50,25) : "))
 students = []
 flag = True
+invalid_marks = True
 
 while(flag):
     print()
@@ -34,65 +35,77 @@ while(flag):
 
     match(choice):
         case 1:
-            name = input("Enter Student Name : ")
-            roll = input("Enter PRN (23UETXXX) : ")
+            name = input("\nEnter Student Name : ")
+            roll_num = input("Enter PRN (23UETXXX) : ")
+            roll = roll_num.upper()
 
             student_marks = []   
 
             for i in range(1, subjects + 1):
                 score = float(input(f"Enter Marks of Subject-{i} : "))
-                student_marks.append(score)
+                if score > marks or score < 0:
+                    print("\nMarks Out of range!!, Try again...\n")
+                    invalid_marks = False
+                    break
+                else:
+                    student_marks.append(score)
+                
+            if not invalid_marks:
+                flag = False
+            else:
+                total = sum(student_marks)
+                avg = (total / (subjects * marks)) * 100
+                percentage = round(avg,2)
+                grade = calGrade(percentage)
 
-            total = sum(student_marks)
-            percentage = (total / (subjects * marks)) * 100
-            grade = calGrade(percentage)
+                student = {
+                    "name": name,
+                    "roll": roll,
+                    "marks": student_marks,
+                    "total": total,
+                    "percentage": percentage,
+                    "grade": grade
+                }
 
-            student = {
-                "name": name,
-                "roll": roll,
-                "marks": student_marks,
-                "total": total,
-                "percentage": percentage,
-                "grade": grade
-            }
+                students.append(student)
 
-            students.append(student)
-
-            print("Student Added Successfully!")
-            print()
-            print(students)
-            print()
+                print("\nStudent Added Successfully!")
+                #print()
+                #print(students)
+                #print()
 
         case 2:
-            roll_no = input("Enter PRN to delete the record(23UETXXX) : ")
+            rollno = input("Enter PRN to delete the record(23UETXXX) : ")
+            roll_no = rollno.upper()
             found = False
 
             for s in students:
-                if s["roll"] == roll_no:
+                if s['roll'] == roll_no:
                     students.remove(s)
                     print()
-                    print("Student Record Deleted!!")
+                    print("\nStudent Record Deleted!!")
                     found = True
                     break
 
             if not found:
-                print("Student Record Not Found!!")
+                print("\nStudent Record Not Found!!")
 
         case 3:
             if len(students) == 0:
-                print("No student Record Found!!")
+                print("\nNo student Record Found!!")
             else:
                 for s in students:
                     print()
-                    print(f"Name : {s["name"]}")
-                    print(f"Roll NO. : {s["roll"]}")
-                    print(f"Marks : {s["marks"]}")
-                    print(f"Total : {s["total"]}")
-                    print(f"Percentage : {s["percentage"]}")
-                    print(f"Grade : {s["grade"]}")
+                    print(f"Name : {s['name']}")
+                    print(f"Roll NO. : {s['roll']}")
+                    print(f"Marks : {s['marks']}")
+                    print(f"Total : {s['total']}")
+                    print(f"Percentage : {s['percentage']}")
+                    print(f"Grade : {s['grade']}")
         
         case 4:
-            roll_no = input("Enter PRN to Update Record(23UETXXX) : ")
+            rollnum = input("Enter PRN to Update Record(23UETXXX) : ")
+            roll_no = rollnum.upper()
             found = False
 
             for s in students:
@@ -111,13 +124,14 @@ while(flag):
                         case 1:
                             new_name = input("Enter New Name : ")
                             s["name"] = new_name
-                            print("Name Updated Successfully!!")
+                            print("\nName Updated Successfully!!")
                             break
 
                         case 2:
-                            new_roll = input("Enter New PRN(23UETXXX) : ")
+                            roll_new = input("Enter New PRN(23UETXXX) : ")
+                            new_roll = roll_new.upper()
                             s["roll"] = new_roll
-                            print("PRN Updated Successfully!!")
+                            print("\nPRN Updated Successfully!!")
 
                         case 3:
                             new_marks = []
@@ -127,7 +141,8 @@ while(flag):
                                 new_marks.append(new_score)
 
                             new_total = sum(new_marks)
-                            new_percentage = (new_total / (subjects * marks)) * 100
+                            new_avg = (new_total / (subjects * marks)) * 100
+                            new_percentage = round(new_avg,2)
                             new_grade = calGrade(new_percentage)
 
                             s["marks"] = new_marks
@@ -135,34 +150,36 @@ while(flag):
                             s["percentage"] = new_percentage
                             s["grade"] = new_grade
 
-                            print("Marks Updated Successfully!!")
+                            print("\nMarks Updated Successfully!!")
 
                         case _:
-                            print("Invalid Choice, Try Again!!")
+                            print("\nInvalid Choice, Try Again!!")
 
         case 5:
             file = open("Student_File.txt", "w")
             for s in students:
                 file.write(f"Name = {s['name']}")
-                file.write(f"\nRoll NO. : {s["roll"]}")
-                file.write(f"\nMarks : {s["marks"]}")
-                file.write(f"\nPercentage : {s["percentage"]}")
-                file.write(f"\nGrade : {s["grade"]}")
+                file.write(f"\nRoll NO. : {s['roll']}")
+                file.write(f"\nMarks : {s['marks']}")
+                file.write(f"\nTotal : {s['total']}")
+                file.write(f"\nPercentage : {s['percentage']}")
+                file.write(f"\nGrade : {s['grade']}")
                 file.write("\n\n")
 
             file.close()
-            print("Saved in file Successfully!!")
+            print("\nSaved in file Successfully!!")
 
         case 6:
             file = open("Student_File.txt", "r")
             record = file.read()
+            print()
             print(record)
             file.close()
 
         case 7:
-            print("Terminating Program...!!")
+            print("\nTerminating Program...!!")
             flag = False
 
         case _:
-            print("Invalid Choice, Re-execute the Program!!")
+            print("\nInvalid Choice, Re-execute the Program!!")
             flag = False
